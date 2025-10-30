@@ -1,25 +1,22 @@
+import logging
+from telegram import Update, ForceReply
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from environs import Env
+from run import detect_intent_texts, project_id
 
 env = Env()
 env.read_env()
 
 TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN")
 
-import logging
-
-from telegram import Update, ForceReply
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
-
 # Enable logging
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
+    level=logging.INFO  # Логирование будет на уровне INFO, не показываются ошибки
 )
 
 logger = logging.getLogger(__name__)
 
-
-# Define a few command handlers. These usually take the two arguments update and
-# context.
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
@@ -28,16 +25,19 @@ def start(update: Update, context: CallbackContext) -> None:
         reply_markup=ForceReply(selective=True),
     )
 
-
 def help_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
     update.message.reply_text('Help!')
 
-
-def echo(update: Update, context: CallbackContext) -> None:
-    """Echo the user message."""
-    update.message.reply_text(update.message.text)
-
+def dialogflow_response(update, context):
+    """Отвечает первой буквой сообщения пользователя."""
+    try:
+        text = update.message.text
+        response = detect_intent_texts(project_id, str(update.message.chat_id), [text], 'ru')
+        update.message.reply_text(response)
+    except Exception as e:
+        # Ошибка просто игнорируется, без логирования
+        pass
 
 def main() -> None:
     """Start the bot."""
@@ -51,17 +51,15 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
 
-    # on non command i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    # on non command i.e message - handle the message with dialogflow
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, dialogflow_response))
 
     # Start the Bot
     updater.start_polling()
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
+    # SIGTERM or SIGABRT.
     updater.idle()
-
 
 if __name__ == '__main__':
     main()
