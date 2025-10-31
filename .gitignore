@@ -90,3 +90,4 @@ db.sqlite3
 media/
 .vscode
 credintials.json
+run.py
