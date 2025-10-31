@@ -1,16 +1,13 @@
 from environs import Env
 import json
-import argparse 
+import argparse
 import textwrap
-from environs import Env
-
 from google.oauth2 import service_account
 
 
-env = Env()
-env.read_env()
-
-def create_intent(project_id, display_name, training_phrases_parts, message_texts):
+def create_intent(
+    project_id, display_name, training_phrases_parts, message_texts, credentials=None
+):
     """Create an intent of the given intent type."""
     from google.cloud import dialogflow
 
@@ -37,26 +34,6 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
 
     print("Intent created: {}".format(response))
 
-
-def main():
-    """Load configuration and create intents from questions.json."""
-    env = Env()
-    env.read_env()
-
-    project_id = env.str("PROJECT_ID")
-
-    with open("questions.json", "r", encoding="utf-8") as my_file:
-        questions_json = my_file.read()
-
-    questions = json.loads(questions_json)
-
-    for display_name, data in questions.items():
-        create_intent(
-            project_id=project_id,
-            display_name=display_name,
-            training_phrases_parts=data["questions"],
-            message_texts=[data["answer"]],
-        )
 
 def main():
     parser = argparse.ArgumentParser()

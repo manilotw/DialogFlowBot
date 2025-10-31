@@ -3,7 +3,6 @@ import random
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
-from dialogflow_bot import detect_intent_texts
 
 env = Env()
 env.read_env()

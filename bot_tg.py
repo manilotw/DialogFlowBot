@@ -55,9 +55,7 @@ def main() -> None:
     """Start the bot."""
     updater = Updater(token=TELEGRAM_BOT_TOKEN)
 
-  
     dispatcher = updater.dispatcher
-
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
