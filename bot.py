@@ -2,12 +2,13 @@ import logging
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from environs import Env
-from run import detect_intent_texts, project_id
+from run import detect_intent_texts
 
 env = Env()
 env.read_env()
 
 TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN")
+project_id = env.str("PROJECT_ID")
 
 # Enable logging
 logging.basicConfig(
