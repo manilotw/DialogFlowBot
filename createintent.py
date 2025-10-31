@@ -47,7 +47,9 @@ def main():
                         в корне проекта."""
         ),
     )
-    
+    env = Env()
+    env.read_env()
+
     credentials = service_account.Credentials.from_service_account_file(
         env.str("GOOGLE_APPLICATION_CREDENTIALS"),
         scopes=["https://www.googleapis.com/auth/cloud-platform"],
