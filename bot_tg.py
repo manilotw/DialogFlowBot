@@ -2,7 +2,6 @@ import logging
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from environs import Env
-from dialogflow_bot import detect_intent_texts
 
 env = Env()
 env.read_env()
@@ -10,10 +9,9 @@ env.read_env()
 TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN")
 project_id = env.str("PROJECT_ID")
 
-# Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
-    level=logging.INFO  # Логирование будет на уровне INFO, не показываются ошибки
+    level=logging.INFO  
 )
 
 logger = logging.getLogger(__name__)
@@ -34,32 +32,41 @@ def dialogflow_response(update, context):
     """Отвечает первой буквой сообщения пользователя."""
     try:
         text = update.message.text
-        response = detect_intent_texts(project_id, str(update.message.chat_id), [text], 'ru')
-        update.message.reply_text(response)
+        # Call Dialogflow directly to get the fulfillment text
+        from google.cloud import dialogflow
+
+        session_client = dialogflow.SessionsClient()
+        session = session_client.session_path(project_id, str(update.message.chat_id))
+
+        text_input = dialogflow.TextInput(text=text, language_code='ru')
+        query_input = dialogflow.QueryInput(text=text_input)
+
+        response = session_client.detect_intent(
+            request={"session": session, "query_input": query_input}
+        )
+
+        fulfillment = response.query_result.fulfillment_text
+        if fulfillment:
+            update.message.reply_text(fulfillment)
     except Exception as e:
-        # Ошибка просто игнорируется, без логирования
         pass
 
 def main() -> None:
     """Start the bot."""
-    # Create the Updater and pass it your bot's token.
     updater = Updater(token=TELEGRAM_BOT_TOKEN)
 
-    # Get the dispatcher to register handlers
+  
     dispatcher = updater.dispatcher
 
-    # on different commands - answer in Telegram
+
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
 
-    # on non command i.e message - handle the message with dialogflow
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, dialogflow_response))
 
     # Start the Bot
     updater.start_polling()
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT.
     updater.idle()
 
 if __name__ == '__main__':

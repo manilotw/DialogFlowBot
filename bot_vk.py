@@ -11,20 +11,32 @@ env.read_env()
 project_id = env.str("PROJECT_ID")
 token = env.str("VK_API_TOKEN")
 
-# def echo(event, vk_api):
-#     vk_api.messages.send(
-#         user_id=event.user_id,
-#         message=event.text,
-#         random_id=random.randint(1,1000)
-#     )
 
 def send_message(event, vk_api):
-    response = detect_intent_texts(project_id, str(event.user_id), [event.text], 'ru')
-    vk_api.messages.send(
-        user_id=event.user_id,
-        message=response,
-        random_id=random.randint(1,1000)
+    # Call Dialogflow directly here so we can check `is_fallback` and stay silent for VK
+    from google.cloud import dialogflow
+
+    session_client = dialogflow.SessionsClient()
+    session = session_client.session_path(project_id, str(event.user_id))
+
+    text_input = dialogflow.TextInput(text=event.text, language_code='ru')
+    query_input = dialogflow.QueryInput(text=text_input)
+
+    response = session_client.detect_intent(
+        request={"session": session, "query_input": query_input}
     )
+
+    # If the detected intent is a fallback (Dialogflow didn't understand), do not reply in VK
+    if getattr(response.query_result.intent, 'is_fallback', False):
+        return
+
+    message = response.query_result.fulfillment_text or ''
+    if message:
+        vk_api.messages.send(
+            user_id=event.user_id,
+            message=message,
+            random_id=random.randint(1,1000)
+        )
 
 if __name__ == "__main__":
     vk_session = vk.VkApi(token=token)
