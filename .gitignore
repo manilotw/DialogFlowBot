@@ -89,5 +89,5 @@ local_settings.py
 db.sqlite3
 media/
 .vscode
-credintials.json
+credentials.json
 run.py
