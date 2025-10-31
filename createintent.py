@@ -1,6 +1,14 @@
 from environs import Env
 import json
+import argparse 
+import textwrap
+from environs import Env
 
+from google.oauth2 import service_account
+
+
+env = Env()
+env.read_env()
 
 def create_intent(project_id, display_name, training_phrases_parts, message_texts):
     """Create an intent of the given intent type."""
@@ -50,6 +58,37 @@ def main():
             message_texts=[data["answer"]],
         )
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--path",
+        default="questions.json",
+        help=textwrap.dedent(
+            """Введите путь до JSON,
+                        откуда будут браться данные для обучения.
+                        По умолчанию данные находятся в questions.json
+                        в корне проекта."""
+        ),
+    )
+    
+    credentials = service_account.Credentials.from_service_account_file(
+        env.str("GOOGLE_APPLICATION_CREDENTIALS"),
+        scopes=["https://www.googleapis.com/auth/cloud-platform"],
+    )
+    args = parser.parse_args()
+    project_id = env.str("PROJECT_ID")
+
+    questions_path = args.path
+    with open(questions_path, "r", encoding="utf-8") as file:
+        topics = json.loads(file.read())
+    for topic, phrase in topics.items():
+        create_intent(
+            project_id,
+            topic,
+            phrase["questions"],
+            [phrase["answer"]],
+            credentials
+        )
 
 if __name__ == '__main__':
     main()
