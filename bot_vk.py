@@ -38,9 +38,13 @@ def send_message(event, vk_api):
         )
 
 if __name__ == "__main__":
-    vk_session = vk.VkApi(token=token)
-    vk_api = vk_session.get_api()
-    longpoll = VkLongPoll(vk_session)
-    for event in longpoll.listen():
-        if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            send_message(event, vk_api)
+    try:
+        vk_session = vk.VkApi(token=token)
+        vk_api = vk_session.get_api()
+        longpoll = VkLongPoll(vk_session)
+        for event in longpoll.listen():
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                send_message(event, vk_api)
+    except Exception as e:
+        from error_handler import send_error
+        send_error("VK Bot", e)

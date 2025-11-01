@@ -2,6 +2,7 @@ import logging
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from environs import Env
+from error_handler import send_error
 
 env = Env()
 env.read_env()
@@ -52,20 +53,26 @@ def dialogflow_response(update, context):
         pass
 
 def main() -> None:
-    """Start the bot."""
-    updater = Updater(token=TELEGRAM_BOT_TOKEN)
 
-    dispatcher = updater.dispatcher
+    try:
+        """Start the bot."""
+        updater = Updater(token=TELEGRAM_BOT_TOKEN)
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", help_command))
+        dispatcher = updater.dispatcher
 
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, dialogflow_response))
+        dispatcher.add_handler(CommandHandler("start", start))
+        dispatcher.add_handler(CommandHandler("help", help_command))
 
-    # Start the Bot
-    updater.start_polling()
+        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, dialogflow_response))
 
-    updater.idle()
+        # Start the Bot
+        updater.start_polling()
+
+        updater.idle()
+    except Exception as e:
+        send_error('Telegram Bot', e)
+        raise
+    
 
 if __name__ == '__main__':
     main()
