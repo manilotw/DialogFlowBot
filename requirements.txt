@@ -5,17 +5,3 @@ requests==2.31.0
 vk-api==11.9.7
 
 
-[Unit]
-Description=DialogFlow Telegram & VK Bot
-After=network.target
-
-[Service]
-WorkingDirectory=/opt/DialogFlowBot
-ExecStart=/opt/DialogFlowBot/venv/bin/python /opt/DialogFlowBot/bot_vk.py
-Restart=always
-RestartSec=5
-User=root
-EnvironmentFile=/opt/DialogFlowBot/.env
-
-[Install]
-WantedBy=multi-user.target
