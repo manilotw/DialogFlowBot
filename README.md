@@ -35,6 +35,8 @@ Python3 должен быть уже установлен. Затем испол
 
 ## Пример использования бота
 
-![Sample](https://s9.gifyu.com/images/SUs5O.gif)
+![Sample](https://vk.com/im?sel=-233611656)
+[Телеграм-бот](https://t.me/callermallbot)
+[ВК-бот](https://vk.com/im?sel=-224989418) 
 
 
