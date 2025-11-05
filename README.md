@@ -39,7 +39,7 @@ python bot_tg.py
 
 3. Для обучения бота используйте команду 
 ```
-`python createintent.py`
+python create_intent.py`
 ```
 Введите путь до папки с JSON, откуда будут браться данные для обучения 
 ```
