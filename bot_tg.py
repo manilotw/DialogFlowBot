@@ -4,11 +4,6 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 from environs import Env
 from error_handler import send_error
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
-    level=logging.INFO  
-)
-
 logger = logging.getLogger(__name__)
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -47,6 +42,11 @@ def dialogflow_response(update, context):
         pass
 
 def main() -> None:
+
+    logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
+    level=logging.INFO  
+)
 
     env = Env()
     env.read_env()
