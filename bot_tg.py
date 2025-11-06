@@ -14,11 +14,11 @@ def start(update: Update, context: CallbackContext) -> None:
         reply_markup=ForceReply(selective=True),
     )
 
-def help_command(update: Update, context: CallbackContext) -> None:
+def send_help(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
     update.message.reply_text('Help!')
 
-def dialogflow_response(update, context):
+def reply_dialogflow(update, context):
     """Отвечает первой буквой сообщения пользователя."""
     try:
         text = update.message.text
@@ -63,9 +63,9 @@ def main() -> None:
         dispatcher = updater.dispatcher
 
         dispatcher.add_handler(CommandHandler("start", start))
-        dispatcher.add_handler(CommandHandler("help", help_command))
+        dispatcher.add_handler(CommandHandler("help", send_help))
 
-        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, dialogflow_response))
+        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, reply_dialogflow))
 
         # Start the Bot
         updater.start_polling()
