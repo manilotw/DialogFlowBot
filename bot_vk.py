@@ -31,10 +31,11 @@ def send_message(event, vk_api):
         )
 
 def main():
-    
+
     env = Env()
     env.read_env()
 
+    global project_id, token
     project_id = env.str("PROJECT_ID")
     token = env.str("VK_API_TOKEN")
 

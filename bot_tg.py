@@ -51,6 +51,7 @@ def main() -> None:
     env = Env()
     env.read_env()
 
+    global TELEGRAM_BOT_TOKEN, project_id
     TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN")
     project_id = env.str("PROJECT_ID")
 
