@@ -32,7 +32,7 @@ def create_intent(
         request={"parent": parent, "intent": intent}
     )
 
-    print("Intent created: {}".format(response))
+    return response
 
 
 def main():
@@ -61,13 +61,14 @@ def main():
     with open(questions_path, "r", encoding="utf-8") as file:
         topics = json.loads(file.read())
     for topic, phrase in topics.items():
-        create_intent(
+        response = create_intent(
             project_id,
             topic,
             phrase["questions"],
             [phrase["answer"]],
             credentials
         )
+        print(f"Intent created: {response.display_name}")
 
 if __name__ == '__main__':
     main()
