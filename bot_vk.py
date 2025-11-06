@@ -4,13 +4,6 @@ import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
 
-env = Env()
-env.read_env()
-
-project_id = env.str("PROJECT_ID")
-token = env.str("VK_API_TOKEN")
-
-
 def send_message(event, vk_api):
     # Call Dialogflow directly here so we can check `is_fallback` and stay silent for VK
     from google.cloud import dialogflow
@@ -37,7 +30,14 @@ def send_message(event, vk_api):
             random_id=random.randint(1,1000)
         )
 
-if __name__ == "__main__":
+def main():
+    
+    env = Env()
+    env.read_env()
+
+    project_id = env.str("PROJECT_ID")
+    token = env.str("VK_API_TOKEN")
+
     try:
         vk_session = vk.VkApi(token=token)
         vk_api = vk_session.get_api()
@@ -48,3 +48,6 @@ if __name__ == "__main__":
     except Exception as e:
         from error_handler import send_error
         send_error("VK Bot", e)
+
+if __name__ == "__main__":
+    main()

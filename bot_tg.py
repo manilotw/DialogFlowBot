@@ -4,12 +4,6 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 from environs import Env
 from error_handler import send_error
 
-env = Env()
-env.read_env()
-
-TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN")
-project_id = env.str("PROJECT_ID")
-
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
     level=logging.INFO  
@@ -53,6 +47,13 @@ def dialogflow_response(update, context):
         pass
 
 def main() -> None:
+
+    env = Env()
+    env.read_env()
+
+    TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN")
+    project_id = env.str("PROJECT_ID")
+
 
     try:
         """Start the bot."""
