@@ -5,7 +5,6 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
 
 def send_message(event, vk_api):
-    # Call Dialogflow directly here so we can check `is_fallback` and stay silent for VK
     from google.cloud import dialogflow
 
     session_client = dialogflow.SessionsClient()
@@ -18,7 +17,6 @@ def send_message(event, vk_api):
         request={"session": session, "query_input": query_input}
     )
 
-    # If the detected intent is a fallback (Dialogflow didn't understand), do not reply in VK
     if getattr(response.query_result.intent, 'is_fallback', False):
         return
 

@@ -22,7 +22,6 @@ def reply_dialogflow(update, context):
     """Отвечает первой буквой сообщения пользователя."""
     try:
         text = update.message.text
-        # Call Dialogflow directly to get the fulfillment text
         from google.cloud import dialogflow
 
         session_client = dialogflow.SessionsClient()
@@ -57,7 +56,6 @@ def main() -> None:
 
 
     try:
-        """Start the bot."""
         updater = Updater(token=TELEGRAM_BOT_TOKEN)
 
         dispatcher = updater.dispatcher
@@ -67,7 +65,6 @@ def main() -> None:
 
         dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, reply_dialogflow))
 
-        # Start the Bot
         updater.start_polling()
 
         updater.idle()
