@@ -3,6 +3,8 @@ from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from environs import Env
 from error_handler import send_error
+from google.cloud import dialogflow
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +24,6 @@ def reply_dialogflow(update, context):
     """Отвечает первой буквой сообщения пользователя."""
     try:
         text = update.message.text
-        from google.cloud import dialogflow
 
         session_client = dialogflow.SessionsClient()
         session = session_client.session_path(project_id, str(update.message.chat_id))

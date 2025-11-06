@@ -3,9 +3,10 @@ import random
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
+from google.cloud import dialogflow
+
 
 def send_message(event, vk_api):
-    from google.cloud import dialogflow
 
     session_client = dialogflow.SessionsClient()
     session = session_client.session_path(project_id, str(event.user_id))
