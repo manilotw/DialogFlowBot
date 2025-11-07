@@ -4,18 +4,13 @@ import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
 from google.cloud import dialogflow
+from dialogflow_bot import detect_intent_texts 
 
 
 def send_message(event, vk_api):
 
-    session_client = dialogflow.SessionsClient()
-    session = session_client.session_path(project_id, str(event.user_id))
-
-    text_input = dialogflow.TextInput(text=event.text, language_code='ru')
-    query_input = dialogflow.QueryInput(text=text_input)
-
-    response = session_client.detect_intent(
-        request={"session": session, "query_input": query_input}
+    response = detect_intent_texts(
+        project_id, str(event.user_id), [event.text], 'ru'
     )
 
     if getattr(response.query_result.intent, 'is_fallback', False):
