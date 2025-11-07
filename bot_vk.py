@@ -9,9 +9,9 @@ from dialogflow_bot import detect_intent_texts
 
 def send_message(event, vk_api):
 
-    response = detect_intent_texts(
-        project_id, str(event.user_id), [event.text], 'ru'
-    )
+    # Use a composite session id to avoid mixing sessions across platforms
+    session_id = f"vk-{event.user_id}"
+    response = detect_intent_texts(project_id, session_id, [event.text], 'ru')
 
     if getattr(response.query_result.intent, 'is_fallback', False):
         return
