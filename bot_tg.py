@@ -22,24 +22,34 @@ def send_help(update: Update, context: CallbackContext) -> None:
 
 def reply_dialogflow(update, context):
     """Отвечает первой буквой сообщения пользователя."""
+    text = update.message.text
+
+    session_client = dialogflow.SessionsClient()
+    session = session_client.session_path(project_id, str(update.message.chat_id))
+
+    text_input = dialogflow.TextInput(text=text, language_code='ru')
+    query_input = dialogflow.QueryInput(text=text_input)
+
+    response = session_client.detect_intent(
+        request={"session": session, "query_input": query_input}
+    )
+
+    fulfillment = response.query_result.fulfillment_text
+    if fulfillment:
+        update.message.reply_text(fulfillment)
+
+
+def _handle_error(update, context):
+    """Global error handler for dispatcher: report exception to admin."""
     try:
-        text = update.message.text
-
-        session_client = dialogflow.SessionsClient()
-        session = session_client.session_path(project_id, str(update.message.chat_id))
-
-        text_input = dialogflow.TextInput(text=text, language_code='ru')
-        query_input = dialogflow.QueryInput(text=text_input)
-
-        response = session_client.detect_intent(
-            request={"session": session, "query_input": query_input}
-        )
-
-        fulfillment = response.query_result.fulfillment_text
-        if fulfillment:
-            update.message.reply_text(fulfillment)
-    except Exception as e:
-        pass
+        err = context.error if hasattr(context, 'error') else None
+        if err is None and len(context.args) > 0:
+            # older versions sometimes pass the exception as first arg
+            err = context.args[0]
+    except Exception:
+        err = None
+    if err:
+        send_error('Telegram Bot', err)
 
 def main() -> None:
 
@@ -65,6 +75,7 @@ def main() -> None:
         dispatcher.add_handler(CommandHandler("help", send_help))
 
         dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, reply_dialogflow))
+        dispatcher.add_error_handler(_handle_error)
 
         updater.start_polling()
 
