@@ -6,7 +6,7 @@ import time
 import requests
 from google.oauth2 import service_account
 import google.auth.transport.requests
-
+from google.cloud import dialogflow
 
 def main():
     env = Env()
@@ -19,8 +19,6 @@ def main():
     project_id = env.str("PROJECT_ID")
 
 def detect_intent_texts(project_id, session_id, texts, language_code):
- 
-    from google.cloud import dialogflow
 
     session_client = dialogflow.SessionsClient()
 
