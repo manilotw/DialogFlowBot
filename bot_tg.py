@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from environs import Env
@@ -21,13 +22,13 @@ def send_help(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
     update.message.reply_text('Help!')
 
-def reply_dialogflow(update, context):
+def reply_dialogflow(update, context, project_id):
     """Отвечает первой буквой сообщения пользователя."""
     text = update.message.text
 
     # Use a composite session id to avoid mixing sessions across platforms
     session_id = f"tg-{update.message.chat_id}"
-    response = detect_intent_texts(project_id, session_id, [text], 'ru')
+    response = detect_intent_texts(project_id, session_id, [text], "ru")
 
     fulfillment = response.query_result.fulfillment_text
     if fulfillment:
@@ -56,20 +57,24 @@ def main() -> None:
     env = Env()
     env.read_env()
 
-    global TELEGRAM_BOT_TOKEN, project_id
-    TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN")
+    token = env.str("TELEGRAM_BOT_TOKEN")
     project_id = env.str("PROJECT_ID")
 
 
     try:
-        updater = Updater(token=TELEGRAM_BOT_TOKEN)
+        updater = Updater(token=token)
 
         dispatcher = updater.dispatcher
 
         dispatcher.add_handler(CommandHandler("start", start))
         dispatcher.add_handler(CommandHandler("help", send_help))
 
-        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, reply_dialogflow))
+        dispatcher.add_handler(
+            MessageHandler(
+                Filters.text & ~Filters.command,
+                partial(reply_dialogflow, project_id=project_id),
+            )
+        )
         dispatcher.add_error_handler(_handle_error)
 
         updater.start_polling()

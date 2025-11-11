@@ -7,11 +7,12 @@ from google.cloud import dialogflow
 from dialogflow_bot import detect_intent_texts 
 
 
-def send_message(event, vk_api):
+
+def send_message(event, vk_api, project_id):
 
     # Use a composite session id to avoid mixing sessions across platforms
     session_id = f"vk-{event.user_id}"
-    response = detect_intent_texts(project_id, session_id, [event.text], 'ru')
+    response = detect_intent_texts(project_id, session_id, [event.text], "ru")
 
     if getattr(response.query_result.intent, 'is_fallback', False):
         return
@@ -29,7 +30,6 @@ def main():
     env = Env()
     env.read_env()
 
-    global project_id, token
     project_id = env.str("PROJECT_ID")
     token = env.str("VK_API_TOKEN")
 
@@ -39,7 +39,7 @@ def main():
         longpoll = VkLongPoll(vk_session)
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-                send_message(event, vk_api)
+                send_message(event, vk_api, project_id)
     except Exception as e:
         from error_handler import send_error
         send_error("VK Bot", e)
