@@ -4,7 +4,9 @@ import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
 from google.cloud import dialogflow
-from dialogflow_bot import detect_intent_texts 
+from dialogflow_bot import detect_intent_texts
+from telegram import Bot
+from error_handler import send_error 
 
 
 
@@ -32,6 +34,8 @@ def main():
 
     project_id = env.str("PROJECT_ID")
     token = env.str("VK_API_TOKEN")
+    bot = Bot(token=env.str("TELEGRAM_BOT_TOKEN"))
+    admin_id = env.str("TELEGRAM_CHAT_ID")
 
     try:
         vk_session = vk.VkApi(token=token)
@@ -42,7 +46,7 @@ def main():
                 send_message(event, vk_api, project_id)
     except Exception as e:
         from error_handler import send_error
-        send_error("VK Bot", e)
+        send_error("VK Bot", e, bot, admin_id)
 
 if __name__ == "__main__":
     main()
