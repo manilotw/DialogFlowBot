@@ -57,14 +57,14 @@ def main() -> None:
     env = Env()
     env.read_env()
 
-    token = env.str("TELEGRAM_BOT_TOKEN")
+    tg_bot_token = env.str("TELEGRAM_BOT_TOKEN")
     project_id = env.str("PROJECT_ID")
     bot = Bot(token=env.str("TELEGRAM_BOT_TOKEN"))
     admin_id = env.str("TELEGRAM_CHAT_ID")
 
 
     try:
-        updater = Updater(token=token)
+        updater = Updater(token=tg_bot_token)
 
         dispatcher = updater.dispatcher
 
