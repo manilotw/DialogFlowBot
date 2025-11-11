@@ -12,7 +12,6 @@ from error_handler import send_error
 
 def send_message(event, vk_api, project_id):
 
-    # Use a composite session id to avoid mixing sessions across platforms
     session_id = f"vk-{event.user_id}"
     response = detect_intent_texts(project_id, session_id, [event.text], "ru")
 

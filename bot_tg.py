@@ -26,7 +26,6 @@ def reply_dialogflow(update, context, project_id):
     """Отвечает первой буквой сообщения пользователя."""
     text = update.message.text
 
-    # Use a composite session id to avoid mixing sessions across platforms
     session_id = f"tg-{update.message.chat_id}"
     response = detect_intent_texts(project_id, session_id, [text], "ru")
 
