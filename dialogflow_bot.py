@@ -1,22 +1,5 @@
 from google.cloud import dialogflow_v2 as dialogflow
-from environs import Env
-import os
-import json
-import time
-import requests
-from google.oauth2 import service_account
-import google.auth.transport.requests
 from google.cloud import dialogflow
-
-def main():
-    env = Env()
-    env.read_env()
-
-    credentials_path = env.str("GOOGLE_APPLICATION_CREDENTIALS")
-
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
-
-    project_id = env.str("PROJECT_ID")
 
 def detect_intent_texts(project_id, session_id, texts, language_code):
 
@@ -36,6 +19,4 @@ def detect_intent_texts(project_id, session_id, texts, language_code):
         return response
     
 
-if __name__ == '__main__':
-    main()
 
