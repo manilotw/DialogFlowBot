@@ -34,23 +34,21 @@ def reply_dialogflow(update, context, project_id):
 
 
 def _handle_error(update, context, bot, admin_id):
-
     try:
-        err = context.error if hasattr(context, 'error') else None
+        err = context.error if hasattr(context, "error") else None
         if err is None and len(context.args) > 0:
-
             err = context.args[0]
     except Exception:
         err = None
+
     if err:
-        send_error('Telegram Bot', err, bot, admin_id)
+        send_error("Telegram Bot", err, bot, admin_id)
 
 def main() -> None:
-
     logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
-    level=logging.INFO  
-)
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        level=logging.INFO,
+    )
 
     env = Env()
     env.read_env()
@@ -60,15 +58,12 @@ def main() -> None:
     bot = Bot(token=env.str("TELEGRAM_BOT_TOKEN"))
     admin_id = env.str("TELEGRAM_CHAT_ID")
 
-
     try:
         updater = Updater(token=tg_bot_token)
-
         dispatcher = updater.dispatcher
 
         dispatcher.add_handler(CommandHandler("start", start))
         dispatcher.add_handler(CommandHandler("help", send_help))
-        
 
         dispatcher.add_handler(
             MessageHandler(
@@ -76,15 +71,14 @@ def main() -> None:
                 partial(reply_dialogflow, project_id=project_id),
             )
         )
+
         dispatcher.add_error_handler(partial(_handle_error, bot=bot, admin_id=admin_id))
 
         updater.start_polling()
-
         updater.idle()
     except Exception as e:
-        send_error('Telegram Bot', e, bot, admin_id)
+        send_error("Telegram Bot", e, bot, admin_id)
         raise
-    
 
 if __name__ == '__main__':
     main()
