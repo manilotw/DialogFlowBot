@@ -4,7 +4,6 @@ from telegram import Update, ForceReply, Bot
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from environs import Env
 from error_handler import send_error
-from google.cloud import dialogflow
 from dialogflow_bot import detect_intent_texts
 
 

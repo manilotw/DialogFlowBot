@@ -1,6 +1,4 @@
 import traceback
-from telegram import Bot
-from environs import Env
 
 def send_error(bot_name: str, error: Exception, bot, admin_id):
     """Отправляет сообщение об ошибке админу в Telegram."""

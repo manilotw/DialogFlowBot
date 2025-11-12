@@ -3,13 +3,13 @@ import json
 import argparse
 import textwrap
 from google.oauth2 import service_account
+from google.cloud import dialogflow
 
 
 def create_intent(
     project_id, display_name, training_phrases_parts, message_texts, credentials=None
 ):
     """Create an intent of the given intent type."""
-    from google.cloud import dialogflow
 
     intents_client = dialogflow.IntentsClient()
 

@@ -3,7 +3,6 @@ import random
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
-from google.cloud import dialogflow
 from dialogflow_bot import detect_intent_texts
 from telegram import Bot
 from error_handler import send_error 
